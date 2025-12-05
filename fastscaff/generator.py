@@ -122,10 +122,8 @@ class ProjectGenerator:
 
         api_files = [
             ("app/api/__init__.py.jinja2", "app/api/__init__.py"),
-            ("app/api/deps.py.jinja2", "app/api/deps.py"),
             ("app/api/v1/__init__.py.jinja2", "app/api/v1/__init__.py"),
             ("app/api/v1/router.py.jinja2", "app/api/v1/router.py"),
-            ("app/api/v1/deps.py.jinja2", "app/api/v1/deps.py"),
             ("app/api/v1/endpoints/__init__.py.jinja2", "app/api/v1/endpoints/__init__.py"),
             ("app/api/v1/endpoints/health.py.jinja2", "app/api/v1/endpoints/health.py"),
             ("app/api/v1/endpoints/auth.py.jinja2", "app/api/v1/endpoints/auth.py"),
@@ -179,15 +177,14 @@ class ProjectGenerator:
         services_dir = self.output_path / "app" / "services"
         services_dir.mkdir(exist_ok=True)
 
-        service_files = [
-            ("app/services/__init__.py.jinja2", "app/services/__init__.py"),
-            ("app/services/base.py.jinja2", "app/services/base.py"),
-            ("app/services/auth.py.jinja2", "app/services/auth.py"),
-            ("app/services/user.py.jinja2", "app/services/user.py"),
-        ]
-
-        for template_path, output_name in service_files:
-            self._render_template(template_path, output_name)
+        if self.orm == "tortoise":
+            self._render_template("app/services/__init___tortoise.py.jinja2", "app/services/__init__.py")
+            self._render_template("app/services/auth_tortoise.py.jinja2", "app/services/auth.py")
+            self._render_template("app/services/user_tortoise.py.jinja2", "app/services/user.py")
+        else:
+            self._render_template("app/services/__init___sqlalchemy.py.jinja2", "app/services/__init__.py")
+            self._render_template("app/services/auth_sqlalchemy.py.jinja2", "app/services/auth.py")
+            self._render_template("app/services/user_sqlalchemy.py.jinja2", "app/services/user.py")
 
     def _generate_middleware(self) -> None:
         middleware_dir = self.output_path / "app" / "middleware"

@@ -1,7 +1,7 @@
 import re
 from typing import Optional, Type
+{%- if is_tortoise %}
 
-{% if is_tortoise %}
 from tortoise.models import Model
 
 _ORDER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
@@ -36,7 +36,8 @@ def parse_order_string(order: str, model: Type[Model]) -> Optional[str]:
         return None
 
     return field if s[0] == "+" else f"-{field}"
-{% else %}
+{%- else %}
+
 from sqlalchemy import UnaryExpression, asc, desc
 from sqlalchemy.orm import DeclarativeBase
 

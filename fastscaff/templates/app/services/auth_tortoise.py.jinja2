@@ -7,12 +7,11 @@ from app.core.security import (
 from app.exceptions.base import InvalidCredentials, InvalidToken
 from app.repositories.user import UserRepository
 from app.schemas.auth import LoginResponse, TokenResponse
-from app.services.base import BaseService
 
 
-class AuthService(BaseService):
-    def __init__(self, user_repo: UserRepository) -> None:
-        self.user_repo = user_repo
+class AuthService:
+    def __init__(self) -> None:
+        self.user_repo = UserRepository()
 
     async def login(self, username: str, password: str) -> LoginResponse:
         user = await self.user_repo.get_by_username(username)
@@ -37,7 +36,6 @@ class AuthService(BaseService):
         if not user_id_raw:
             raise InvalidToken
 
-        # Ensure user_id is a valid type (str or int)
         if isinstance(user_id_raw, (str, int)):
             user_id = user_id_raw
         else:
@@ -45,3 +43,4 @@ class AuthService(BaseService):
 
         access_token = create_access_token(subject=user_id)
         return TokenResponse(access_token=access_token)
+

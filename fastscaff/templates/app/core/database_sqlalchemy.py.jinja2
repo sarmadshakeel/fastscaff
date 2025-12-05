@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator, Dict, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -64,6 +65,26 @@ class Database(Singleton):
         logger.info("Database connections closed")
 
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
+        if not self._session_factory:
+            raise RuntimeError("Database not initialized")
+
+        async with self._session_factory() as session:
+            try:
+                yield session
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                raise
+
+    @asynccontextmanager
+    async def session(self) -> AsyncGenerator[AsyncSession, None]:
+        """Context manager for database session.
+
+        Usage:
+            async with db.session() as session:
+                repo = UserRepository(session)
+                user = await repo.get_by_id(user_id)
+        """
         if not self._session_factory:
             raise RuntimeError("Database not initialized")
 
