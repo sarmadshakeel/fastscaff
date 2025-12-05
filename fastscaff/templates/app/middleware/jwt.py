@@ -9,20 +9,6 @@ from app.core.security import decode_token
 
 
 class JWTAuthMiddleware(BaseHTTPMiddleware):
-    """
-    JWT authentication middleware.
-
-    Validates JWT token and sets user information in request state.
-    Skips authentication for whitelisted paths.
-
-    Usage:
-        app.add_middleware(
-            JWTAuthMiddleware,
-            whitelist=["/health", "/docs", "/redoc", "/openapi.json"],
-            whitelist_prefixes=["/api/v1/auth"],
-        )
-    """
-
     def __init__(
         self,
         app,
@@ -34,7 +20,6 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         self.whitelist_prefixes: List[str] = whitelist_prefixes or []
 
     def _is_whitelisted(self, path: str) -> bool:
-        """Check if path is whitelisted."""
         if path in self.whitelist:
             return True
 

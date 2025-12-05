@@ -6,13 +6,6 @@ from app.services.user import UserService
 
 
 class ServiceRegistry(Singleton):
-    """Service registry for centralized service access.
-
-    Usage:
-        from app.services import registry
-        await registry.user_service.get_user_by_id(user_id)
-    """
-
     def __init__(self) -> None:
         self._user_service: Optional[UserService] = None
         self._auth_service: Optional[AuthService] = None

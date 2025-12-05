@@ -1,33 +1,3 @@
-"""
-RBAC (Role-Based Access Control) using Casbin.
-
-This module provides a complete RBAC implementation with:
-- Role hierarchy support
-- Resource-based permissions
-- Domain/tenant isolation (optional)
-- Async enforcement
-- FastAPI integration
-
-Usage:
-    from app.core.rbac import enforcer, require_permission
-
-    # Check permission
-    if await enforcer.enforce(user_id, resource, action):
-        ...
-
-    # As FastAPI dependency
-    @router.get("/users/{user_id}")
-    async def get_user(
-        user_id: int,
-        _: None = Depends(require_permission("users", "read")),
-    ):
-        ...
-
-    # Role management
-    await enforcer.add_role_for_user(user_id, "admin")
-    await enforcer.delete_role_for_user(user_id, "admin")
-    roles = await enforcer.get_roles_for_user(user_id)
-"""
 import asyncio
 from pathlib import Path
 from typing import Any, List, Optional, Union
@@ -85,14 +55,7 @@ m = g(r.sub, p.sub, r.dom) && r.dom == p.dom && r.obj == p.obj && r.act == p.act
 
 
 class RBACEnforcer(Singleton):
-    """
-    Async RBAC enforcer using Casbin.
-
-    Supports:
-    - File-based policy storage (for development)
-    - Database-based policy storage (for production)
-    - In-memory policy (for testing)
-    """
+    """Async RBAC enforcer using Casbin."""
 
     _enforcer: Optional[Any] = None
     _initialized: bool = False
@@ -108,14 +71,6 @@ class RBACEnforcer(Singleton):
         adapter: Optional[str] = None,
         use_domain: bool = False,
     ) -> None:
-        """
-        Initialize the RBAC enforcer.
-
-        Args:
-            model: Path to model file or model string (uses default if None)
-            adapter: Database URL for policy storage (file path or "memory")
-            use_domain: Whether to use domain/tenant model
-        """
         if not CASBIN_AVAILABLE or casbin is None:
             logger.warning(
                 "Casbin not installed. RBAC disabled. "
@@ -165,18 +120,6 @@ class RBACEnforcer(Singleton):
         action: str,
         domain: Optional[str] = None,
     ) -> bool:
-        """
-        Check if subject has permission to perform action on resource.
-
-        Args:
-            subject: User ID or role name
-            resource: Resource identifier (e.g., "users", "posts")
-            action: Action name (e.g., "read", "write", "delete")
-            domain: Optional domain/tenant for multi-tenant apps
-
-        Returns:
-            True if permission granted, False otherwise
-        """
         if not self._initialized or not self._enforcer:
             logger.warning("RBAC not initialized, allowing by default")
             return True
@@ -198,7 +141,6 @@ class RBACEnforcer(Singleton):
         action: str,
         domain: Optional[str] = None,
     ) -> bool:
-        """Add a permission policy."""
         if not self._initialized or not self._enforcer:
             return False
 
@@ -219,7 +161,6 @@ class RBACEnforcer(Singleton):
         action: str,
         domain: Optional[str] = None,
     ) -> bool:
-        """Remove a permission policy."""
         if not self._initialized or not self._enforcer:
             return False
 
@@ -239,7 +180,6 @@ class RBACEnforcer(Singleton):
         role: str,
         domain: Optional[str] = None,
     ) -> bool:
-        """Assign a role to a user."""
         if not self._initialized or not self._enforcer:
             return False
 
@@ -261,7 +201,6 @@ class RBACEnforcer(Singleton):
         role: str,
         domain: Optional[str] = None,
     ) -> bool:
-        """Remove a role from a user."""
         if not self._initialized or not self._enforcer:
             return False
 
@@ -282,7 +221,6 @@ class RBACEnforcer(Singleton):
         user: Union[str, int],
         domain: Optional[str] = None,
     ) -> List[str]:
-        """Get all roles for a user."""
         if not self._initialized or not self._enforcer:
             return []
 
@@ -303,7 +241,6 @@ class RBACEnforcer(Singleton):
         role: str,
         domain: Optional[str] = None,
     ) -> List[str]:
-        """Get all users with a specific role."""
         if not self._initialized or not self._enforcer:
             return []
 
@@ -321,7 +258,6 @@ class RBACEnforcer(Singleton):
         role: str,
         domain: Optional[str] = None,
     ) -> bool:
-        """Check if user has a specific role."""
         if not self._initialized or not self._enforcer:
             return False
 
@@ -341,7 +277,6 @@ class RBACEnforcer(Singleton):
         user: Union[str, int],
         domain: Optional[str] = None,
     ) -> List[List[str]]:
-        """Get all permissions for a user (including inherited from roles)."""
         if not self._initialized or not self._enforcer:
             return []
 
@@ -358,7 +293,6 @@ class RBACEnforcer(Singleton):
             return []
 
     async def delete_user(self, user: Union[str, int]) -> bool:
-        """Remove all roles and permissions for a user."""
         if not self._initialized or not self._enforcer:
             return False
 
@@ -371,7 +305,6 @@ class RBACEnforcer(Singleton):
             return False
 
     async def delete_role(self, role: str) -> bool:
-        """Remove a role and all its assignments."""
         if not self._initialized or not self._enforcer:
             return False
 
@@ -386,25 +319,6 @@ enforcer = RBACEnforcer()
 
 
 class RequirePermission:
-    """
-    FastAPI dependency for permission checking.
-
-    Usage:
-        @router.get("/users")
-        async def list_users(
-            _: None = Depends(RequirePermission("users", "read")),
-        ):
-            ...
-
-        # Or use the pre-configured instance
-        @router.delete("/users/{user_id}")
-        async def delete_user(
-            user_id: int,
-            _: None = Depends(require_permission("users", "delete")),
-        ):
-            ...
-    """
-
     def __init__(
         self,
         resource: str,
@@ -440,31 +354,10 @@ def require_permission(
     action: str,
     domain: Optional[str] = None,
 ) -> RequirePermission:
-    """
-    Factory function for permission dependency.
-
-    Usage:
-        @router.get("/posts")
-        async def list_posts(
-            _: None = Depends(require_permission("posts", "read")),
-        ):
-            ...
-    """
     return RequirePermission(resource, action, domain)
 
 
 def require_role(role: str, domain: Optional[str] = None):
-    """
-    FastAPI dependency for role checking.
-
-    Usage:
-        @router.get("/admin/dashboard")
-        async def admin_dashboard(
-            _: None = Depends(require_role("admin")),
-        ):
-            ...
-    """
-
     async def check_role(request: Request) -> None:
         user_id = getattr(request.state, "user_id", None)
 

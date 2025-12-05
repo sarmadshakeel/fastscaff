@@ -8,16 +8,7 @@ _ORDER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 
 
 def parse_order_string(order: str, model: Type[Model]) -> Optional[str]:
-    """
-    Parse order string for Tortoise ORM.
-
-    Args:
-        order: Order string, format: +field_name or -field_name
-        model: Tortoise model class
-
-    Returns:
-        Parsed order string or None if invalid
-    """
+    """Parse order string for Tortoise ORM. Format: +field or -field."""
     if not order:
         return None
 
@@ -48,16 +39,7 @@ def parse_order_string(
     order: str,
     model: Type[DeclarativeBase],
 ) -> Optional[UnaryExpression]:
-    """
-    Parse order string for SQLAlchemy.
-
-    Args:
-        order: Order string, format: +field_name or -field_name
-        model: SQLAlchemy model class
-
-    Returns:
-        SQLAlchemy order clause or None if invalid
-    """
+    """Parse order string for SQLAlchemy. Format: +field or -field."""
     if not order:
         return None
 

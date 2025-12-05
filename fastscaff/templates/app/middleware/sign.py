@@ -14,24 +14,7 @@ from app.core.logger import logger
 
 
 class SignatureMiddleware(BaseHTTPMiddleware):
-    """
-    Request signature verification middleware.
-
-    Verifies that requests are signed with a valid signature to prevent
-    tampering and replay attacks.
-
-    Signature Algorithm:
-        1. Sort all parameters (query + body) by key
-        2. Concatenate as: key1=value1&key2=value2&...
-        3. Append timestamp and nonce: ...&timestamp=xxx&nonce=xxx
-        4. Calculate HMAC-SHA256 with secret key
-        5. Compare with X-Signature header
-
-    Required Headers:
-        - X-Timestamp: Unix timestamp (within 5 minutes)
-        - X-Nonce: Random string (for replay attack prevention)
-        - X-Signature: HMAC-SHA256 signature
-    """
+    """Request signature verification using HMAC-SHA256."""
 
     def __init__(
         self,

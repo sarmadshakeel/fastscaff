@@ -9,25 +9,6 @@ from app.core.logger import bind_context, clear_context
 
 
 class TracingMiddleware(BaseHTTPMiddleware):
-    """
-    Distributed tracing middleware.
-
-    Generates or propagates trace IDs for request tracking across services.
-    Supports common tracing header formats:
-        - X-Trace-ID (custom)
-        - X-Request-ID (common)
-        - traceparent (W3C Trace Context)
-
-    Usage:
-        app.add_middleware(TracingMiddleware)
-
-    The trace ID is:
-        - Read from incoming headers (if present)
-        - Generated if not present
-        - Bound to structlog context for all logs in this request
-        - Added to response headers
-    """
-
     TRACE_HEADERS = [
         "X-Trace-ID",
         "X-Request-ID",
@@ -40,18 +21,11 @@ class TracingMiddleware(BaseHTTPMiddleware):
         header_name: str = "X-Trace-ID",
         generate_if_missing: bool = True,
     ) -> None:
-        """
-        Args:
-            app: ASGI application
-            header_name: Header name for trace ID in response
-            generate_if_missing: Generate trace ID if not in request headers
-        """
         super().__init__(app)
         self.header_name = header_name
         self.generate_if_missing = generate_if_missing
 
     def _extract_trace_id(self, request: Request) -> Optional[str]:
-        """Extract trace ID from request headers."""
         for header in self.TRACE_HEADERS:
             trace_id = request.headers.get(header)
             if trace_id:

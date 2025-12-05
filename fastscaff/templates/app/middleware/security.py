@@ -6,26 +6,6 @@ from starlette.responses import Response
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """
-    Add security headers to all responses.
-
-    Headers added:
-    - X-Content-Type-Options: nosniff
-    - X-Frame-Options: DENY (or SAMEORIGIN)
-    - X-XSS-Protection: 1; mode=block
-    - Referrer-Policy: strict-origin-when-cross-origin
-    - Content-Security-Policy (optional)
-    - Strict-Transport-Security (optional, for HTTPS)
-
-    Usage:
-        app.add_middleware(
-            SecurityHeadersMiddleware,
-            frame_options="DENY",
-            content_security_policy="default-src 'self'",
-            hsts_max_age=31536000,
-        )
-    """
-
     def __init__(
         self,
         app,

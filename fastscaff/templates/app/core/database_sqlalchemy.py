@@ -20,7 +20,6 @@ class Database(Singleton):
 
     @staticmethod
     def _get_engine_kwargs(url: str) -> Dict[str, Any]:
-        """Get engine kwargs based on database type."""
         # SQLite doesn't support connection pooling options
         if url.startswith("sqlite"):
             return {
@@ -78,13 +77,6 @@ class Database(Singleton):
 
     @asynccontextmanager
     async def session(self) -> AsyncGenerator[AsyncSession, None]:
-        """Context manager for database session.
-
-        Usage:
-            async with db.session() as session:
-                repo = UserRepository(session)
-                user = await repo.get_by_id(user_id)
-        """
         if not self._session_factory:
             raise RuntimeError("Database not initialized")
 

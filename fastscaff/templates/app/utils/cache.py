@@ -13,11 +13,7 @@ AsyncFunc = Callable[..., Coroutine[Any, Any, T]]
 
 
 class CachedFunction:
-    """
-    Wrapper for cached async functions.
-
-    Preserves the original function and cache reference for invalidation.
-    """
+    """Wrapper for cached async functions."""
 
     def __init__(
         self,
@@ -32,7 +28,6 @@ class CachedFunction:
         self._ttl = ttl
         self._key_builder = key_builder
         self._cache_none = cache_none
-        # Copy function metadata
         self.__name__: str = func.__name__ if hasattr(func, "__name__") else "cached_function"
         self.__doc__ = func.__doc__
         self.__module__: str = func.__module__ if hasattr(func, "__module__") else __name__
@@ -40,7 +35,6 @@ class CachedFunction:
 
     @property
     def original_func(self) -> Callable[..., Awaitable[Any]]:
-        """Get the original wrapped function."""
         return self._original_func
 
     async def __call__(self, *args: Any, **kwargs: Any) -> Any:
@@ -58,25 +52,15 @@ class CachedFunction:
 
 
 class LRUCache:
-    """
-    Thread-safe LRU cache with TTL support.
-
-    Used as L1 (local memory) cache.
-    """
+    """Thread-safe LRU cache with TTL support. Used as L1 cache."""
 
     def __init__(self, maxsize: int = 1000, default_ttl: int = 300) -> None:
-        """
-        Args:
-            maxsize: Maximum number of items to store
-            default_ttl: Default TTL in seconds
-        """
         self.maxsize = maxsize
         self.default_ttl = default_ttl
         self._cache: OrderedDict[str, tuple[Any, float]] = OrderedDict()
         self._lock = asyncio.Lock()
 
     async def get(self, key: str) -> Optional[Any]:
-        """Get value from cache, returns None if not found or expired."""
         async with self._lock:
             if key not in self._cache:
                 return None
@@ -96,7 +80,6 @@ class LRUCache:
         value: Any,
         ttl: Optional[int] = None,
     ) -> None:
-        """Set value in cache with optional TTL."""
         async with self._lock:
             if ttl is None:
                 ttl = self.default_ttl
@@ -111,7 +94,6 @@ class LRUCache:
             self._cache[key] = (value, expires_at)
 
     async def delete(self, key: str) -> bool:
-        """Delete key from cache, returns True if key existed."""
         async with self._lock:
             if key in self._cache:
                 del self._cache[key]
@@ -119,12 +101,10 @@ class LRUCache:
             return False
 
     async def clear(self) -> None:
-        """Clear all cached items."""
         async with self._lock:
             self._cache.clear()
 
     async def cleanup_expired(self) -> int:
-        """Remove expired entries, returns count of removed items."""
         async with self._lock:
             now = time.time()
             expired_keys = [
@@ -137,37 +117,8 @@ class LRUCache:
 
 
 class MultiLevelCache:
-    """
-    Multi-level cache with L1 (local memory) and L2 (Redis).
+    """Multi-level cache with L1 (local memory) and L2 (Redis)."""
 
-    Features:
-    - L1: Fast local memory cache with LRU eviction
-    - L2: Distributed Redis cache for sharing across instances
-    - Automatic fallback when Redis is unavailable
-    - Cache stampede protection with distributed locks
-    - Null value caching to prevent cache penetration
-
-    Usage:
-        from app.core.redis import redis_client
-
-        cache = MultiLevelCache(redis=redis_client)
-
-        # Direct usage
-        await cache.get("user:1")
-        await cache.set("user:1", user_data, ttl=300)
-
-        # Decorator usage
-        @cache.cached(ttl=60)
-        async def get_user(user_id: int):
-            return await db.get_user(user_id)
-
-        # Decorator with custom key
-        @cache.cached(ttl=60, key_builder=lambda user_id: f"user:{user_id}")
-        async def get_user(user_id: int):
-            return await db.get_user(user_id)
-    """
-
-    # Sentinel value for caching None/null results
     _NULL_SENTINEL = "__NULL__"
 
     def __init__(
@@ -180,16 +131,6 @@ class MultiLevelCache:
         null_ttl: int = 30,
         lock_timeout: int = 5,
     ) -> None:
-        """
-        Args:
-            redis: Redis client instance (optional, L2 disabled if None)
-            l1_maxsize: Maximum items in L1 cache
-            l1_ttl: Default TTL for L1 cache in seconds
-            l2_ttl: Default TTL for L2 cache in seconds
-            key_prefix: Prefix for Redis keys
-            null_ttl: TTL for null value cache (prevents cache penetration)
-            lock_timeout: Lock timeout for cache stampede protection
-        """
         self.redis = redis
         self.l1 = LRUCache(maxsize=l1_maxsize, default_ttl=l1_ttl)
         self.l1_ttl = l1_ttl
@@ -199,19 +140,12 @@ class MultiLevelCache:
         self.lock_timeout = lock_timeout
 
     def _make_key(self, key: str) -> str:
-        """Create prefixed key for Redis."""
         return f"{self.key_prefix}:{key}"
 
     def _make_lock_key(self, key: str) -> str:
-        """Create lock key for cache stampede protection."""
         return f"{self.key_prefix}:lock:{key}"
 
     async def get(self, key: str) -> Optional[Any]:
-        """
-        Get value from cache.
-
-        Checks L1 first, then L2. Returns None if not found.
-        """
         l1_value = await self.l1.get(key)
         if l1_value is not None:
             if l1_value == self._NULL_SENTINEL:
@@ -248,15 +182,6 @@ class MultiLevelCache:
         ttl: Optional[int] = None,
         l1_ttl: Optional[int] = None,
     ) -> bool:
-        """
-        Set value in both L1 and L2 cache.
-
-        Args:
-            key: Cache key
-            value: Value to cache (can be None)
-            ttl: L2 TTL in seconds (defaults to l2_ttl)
-            l1_ttl: L1 TTL in seconds (defaults to l1_ttl)
-        """
         if ttl is None:
             ttl = self.l2_ttl
         if l1_ttl is None:
@@ -282,7 +207,6 @@ class MultiLevelCache:
             return False
 
     async def delete(self, key: str) -> bool:
-        """Delete key from both L1 and L2 cache."""
         await self.l1.delete(key)
 
         if not self.redis:
@@ -297,7 +221,6 @@ class MultiLevelCache:
             return False
 
     async def _acquire_lock(self, key: str) -> bool:
-        """Acquire distributed lock for cache stampede protection."""
         if not self.redis:
             return True
 
@@ -316,7 +239,6 @@ class MultiLevelCache:
             return True
 
     async def _release_lock(self, key: str) -> None:
-        """Release distributed lock."""
         if not self.redis:
             return
 
@@ -333,16 +255,6 @@ class MultiLevelCache:
         factory: Callable[[], Any],
         ttl: Optional[int] = None,
     ) -> Any:
-        """
-        Get value from cache, or compute and cache it.
-
-        Includes cache stampede protection using distributed locks.
-
-        Args:
-            key: Cache key
-            factory: Async function to compute value if not cached
-            ttl: TTL in seconds
-        """
         value = await self.get(key)
         if value is not None:
             return value
@@ -371,19 +283,6 @@ class MultiLevelCache:
         ttl: Optional[int] = None,
         cache_none: bool = True,
     ) -> Any:
-        """
-        Get value from cache, or compute and cache it.
-
-        This is the public API for cached computation with full features:
-        - Cache stampede protection
-        - Null value caching support (cache_none)
-
-        Args:
-            key: Cache key
-            compute_func: Async function to compute value if not cached
-            ttl: TTL in seconds
-            cache_none: Whether to cache None results
-        """
         cached_value = await self.get(key)
         if cached_value is not None:
             return cached_value
@@ -419,19 +318,10 @@ class MultiLevelCache:
         key_builder: Optional[Callable[..., str]] = None,
         cache_none: bool = True,
     ) -> Callable[[Callable[..., Awaitable[Any]]], CachedFunction]:
-        """
-        Decorator to cache function results.
-
-        Args:
-            ttl: Cache TTL in seconds
-            key_builder: Function to build cache key from arguments
-            cache_none: Whether to cache None results (prevents cache penetration)
-        """
         effective_ttl = ttl if ttl is not None else self.l2_ttl
         cache_instance = self
 
         def decorator(func: Callable[..., Awaitable[Any]]) -> CachedFunction:
-            # Create key builder that captures func reference
             if key_builder is not None:
                 actual_key_builder = key_builder
             else:
@@ -454,11 +344,6 @@ class MultiLevelCache:
         args: Tuple[Any, ...],
         kwargs: Dict[str, Any],
     ) -> str:
-        """
-        Generate cache key from function signature.
-
-        Public method for custom key generation in decorators.
-        """
         key_parts = [
             func.__module__,
             func.__qualname__,
@@ -476,12 +361,6 @@ class MultiLevelCache:
         *args: Any,
         **kwargs: Any,
     ) -> bool:
-        """
-        Invalidate cache for a specific function call.
-
-        Usage:
-            await cache.invalidate(get_user, user_id=1)
-        """
         if isinstance(func, CachedFunction):
             original_func = func.original_func
         else:
@@ -490,15 +369,6 @@ class MultiLevelCache:
         return await self.delete(cache_key)
 
     async def invalidate_pattern(self, pattern: str) -> int:
-        """
-        Invalidate all keys matching pattern (L2 only).
-
-        Args:
-            pattern: Redis pattern (e.g., "user:*")
-
-        Returns:
-            Number of keys deleted
-        """
         if not self.redis:
             return 0
 
@@ -519,11 +389,4 @@ class MultiLevelCache:
 
 
 def create_cache(redis=None) -> MultiLevelCache:
-    """
-    Factory function to create cache instance.
-
-    Usage:
-        from app.core.redis import redis_client
-        cache = create_cache(redis=redis_client)
-    """
     return MultiLevelCache(redis=redis)

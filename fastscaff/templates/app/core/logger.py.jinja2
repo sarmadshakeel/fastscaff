@@ -1,13 +1,3 @@
-"""
-Structured logging configuration using structlog.
-
-Features:
-- JSON output for production (machine-readable)
-- Colored console output for development (human-readable)
-- Context variables for request tracing (trace_id, user_id, etc.)
-- Integration with standard library logging (uvicorn, sqlalchemy, etc.)
-- Exception formatting with stack traces
-"""
 import logging
 import sys
 from typing import Any, List, Optional
@@ -44,7 +34,6 @@ def _drop_color_message_key(
 
 
 def get_shared_processors() -> List[Processor]:
-    """Get processors shared between structlog and stdlib logging."""
     return [
         structlog.contextvars.merge_contextvars,
         structlog.stdlib.add_log_level,
@@ -58,12 +47,6 @@ def get_shared_processors() -> List[Processor]:
 
 
 def configure_stdlib_logging(log_level: str, json_logs: bool) -> None:
-    """
-    Configure standard library logging to use structlog processors.
-
-    This ensures logs from third-party libraries (uvicorn, sqlalchemy, etc.)
-    are also formatted consistently.
-    """
     shared_processors = get_shared_processors()
 
     if json_logs:
@@ -99,7 +82,6 @@ def configure_stdlib_logging(log_level: str, json_logs: bool) -> None:
 
 
 def configure_structlog() -> None:
-    """Configure structlog with appropriate processors."""
     # Use shared processors + wrap_for_formatter to let stdlib do final rendering
     # This avoids double JSON encoding
     processors: List[Processor] = [
@@ -117,7 +99,6 @@ def configure_structlog() -> None:
 
 
 def setup_logging() -> None:
-    """Initialize logging configuration."""
     log_level = getattr(settings, "LOG_LEVEL", "INFO")
     log_format = getattr(settings, "LOG_FORMAT", "json")
     json_logs = log_format.lower() == "json"
@@ -127,31 +108,21 @@ def setup_logging() -> None:
 
 
 def bind_context(**kwargs: Any) -> None:
-    """
-    Bind key-value pairs to the current context.
-
-    All subsequent log calls in this context will include these values.
-    """
     bind_contextvars(**kwargs)
 
 
 def unbind_context(*keys: str) -> None:
-    """Remove specific keys from the current context."""
     unbind_contextvars(*keys)
 
 
 def clear_context() -> None:
-    """Clear all context variables."""
     clear_contextvars()
 
 
 def get_logger(name: Optional[str] = None) -> structlog.BoundLogger:
-    """Get a logger instance."""
     return structlog.get_logger(name)
 
 
-# Initialize logging on module import
 setup_logging()
 
-# Default logger instance
 logger: structlog.BoundLogger = get_logger("{{ project_name_snake }}")

@@ -21,6 +21,5 @@ async def refresh_token(request: RefreshRequest) -> Response[TokenResponse]:
 
 @router.post("/logout")
 async def logout(request: Request) -> Response[None]:
-    # request.state.user_id ensures user is authenticated (set by JWT middleware)
     _ = request.state.user_id
     return Response(data=None, msg="Logged out")

@@ -9,13 +9,6 @@ from app.core.logger import logger
 
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
-    """
-    Request logging middleware using structlog.
-
-    Logs HTTP requests with timing, status codes, and request bodies.
-    Works with TracingMiddleware for trace ID propagation (via structlog context).
-    """
-
     MAX_BODY_LOG_SIZE = 1_000_000
 
     def __init__(

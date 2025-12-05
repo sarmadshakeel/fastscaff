@@ -9,18 +9,9 @@ from app.core.logger import logger
 
 
 class TokenBucket:
-    """
-    Token bucket algorithm implementation.
-
-    Thread-safe token bucket that refills at a constant rate.
-    """
+    """Token bucket algorithm for rate limiting."""
 
     def __init__(self, capacity: int, refill_rate: float) -> None:
-        """
-        Args:
-            capacity: Maximum number of tokens in the bucket
-            refill_rate: Tokens added per second
-        """
         self.capacity = capacity
         self.refill_rate = refill_rate
         self.tokens = float(capacity)
@@ -28,12 +19,7 @@ class TokenBucket:
         self._lock = asyncio.Lock()
 
     async def acquire(self, tokens: int = 1) -> bool:
-        """
-        Try to acquire tokens from the bucket.
-
-        Returns:
-            True if tokens were acquired, False otherwise
-        """
+        """Try to acquire tokens. Returns True if successful."""
         async with self._lock:
             now = time.monotonic()
             elapsed = now - self.last_refill
@@ -59,25 +45,7 @@ class TokenBucket:
 
 
 class MemoryRateLimiter:
-    """
-    In-memory rate limiter using token bucket algorithm.
-
-    Features:
-    - Token bucket algorithm for smooth rate limiting
-    - Automatic cleanup of expired buckets
-    - Thread-safe with asyncio locks
-
-    Usage:
-        limiter = MemoryRateLimiter(
-            requests_per_second=10,
-            burst_size=20,
-        )
-
-        @router.get("/api/resource")
-        async def get_resource(request: Request):
-            await limiter.check(request)
-            ...
-    """
+    """In-memory rate limiter using token bucket algorithm."""
 
     def __init__(
         self,
@@ -86,13 +54,6 @@ class MemoryRateLimiter:
         key_func: Optional[Callable[[Request], str]] = None,
         cleanup_interval: int = 300,
     ) -> None:
-        """
-        Args:
-            requests_per_second: Allowed requests per second
-            burst_size: Maximum burst size (defaults to 2x requests_per_second)
-            key_func: Function to extract identifier from request
-            cleanup_interval: Seconds between cleanup runs
-        """
         self.requests_per_second = requests_per_second
         self.burst_size = burst_size or int(requests_per_second * 2)
         self.key_func = key_func or self._default_key_func
@@ -148,12 +109,7 @@ class MemoryRateLimiter:
             logger.debug(f"Rate limiter cleanup: removed {len(expired_keys)} buckets")
 
     async def check(self, request: Request) -> None:
-        """
-        Check if request is allowed.
-
-        Raises:
-            HTTPException: 429 if rate limit exceeded
-        """
+        """Check if request is allowed. Raises HTTPException 429 if exceeded."""
         key = self.key_func(request)
         bucket = await self._get_bucket(key)
 
@@ -171,28 +127,7 @@ class MemoryRateLimiter:
 
 
 class RedisRateLimiter:
-    """
-    Distributed rate limiter using Redis with sliding window algorithm.
-
-    Features:
-    - Sliding window for accurate rate limiting
-    - Distributed across multiple instances
-    - Graceful degradation when Redis is unavailable
-
-    Usage:
-        from app.core.redis import redis_client
-
-        limiter = RedisRateLimiter(
-            redis=redis_client,
-            requests_per_window=100,
-            window_seconds=60,
-        )
-
-        @router.get("/api/resource")
-        async def get_resource(request: Request):
-            await limiter.check(request)
-            ...
-    """
+    """Distributed rate limiter using Redis with sliding window algorithm."""
 
     def __init__(
         self,
@@ -203,15 +138,6 @@ class RedisRateLimiter:
         key_func: Optional[Callable[[Request], str]] = None,
         fail_open: bool = True,
     ) -> None:
-        """
-        Args:
-            redis: Redis client instance
-            requests_per_window: Maximum requests allowed per window
-            window_seconds: Window duration in seconds
-            key_prefix: Redis key prefix
-            key_func: Function to extract identifier from request
-            fail_open: If True, allow requests when Redis is unavailable
-        """
         self.redis = redis
         self.requests_per_window = requests_per_window
         self.window_seconds = window_seconds
@@ -232,12 +158,7 @@ class RedisRateLimiter:
         return "unknown"
 
     async def check(self, request: Request) -> None:
-        """
-        Check if request is allowed using sliding window algorithm.
-
-        Raises:
-            HTTPException: 429 if rate limit exceeded
-        """
+        """Check if request is allowed. Raises HTTPException 429 if exceeded."""
         key = f"{self.key_prefix}:{self.key_func(request)}"
         now = time.time()
         window_start = now - self.window_seconds
@@ -286,17 +207,6 @@ class RedisRateLimiter:
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """
-    Rate limiting middleware for global rate limiting.
-
-    Usage:
-        app.add_middleware(
-            RateLimitMiddleware,
-            limiter=MemoryRateLimiter(requests_per_second=100),
-            exclude_paths=["/health", "/metrics"],
-        )
-    """
-
     def __init__(
         self,
         app,

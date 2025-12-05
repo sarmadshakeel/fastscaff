@@ -7,19 +7,6 @@ from app.core.security import decode_token
 
 
 class AuthRequired:
-    """
-    Authentication dependency that can be customized.
-
-    Usage:
-        @router.get("/api/resource")
-        async def get_resource(user_id: int = Depends(AuthRequired())):
-            ...
-
-        @router.get("/api/admin/resource")
-        async def get_admin_resource(user_id: int = Depends(AuthRequired(roles=["admin"]))):
-            ...
-    """
-
     def __init__(
         self,
         roles: Optional[List[str]] = None,
@@ -106,27 +93,12 @@ class AuthRequired:
 
 
 class WhitelistChecker:
-    """
-    Check if a path is in whitelist (no auth required).
-
-    Usage:
-        whitelist = WhitelistChecker([
-            ("/api/v1/health", ["GET"]),
-            ("/api/v1/auth/login", ["POST"]),
-        ])
-
-        if whitelist.is_allowed(request.url.path, request.method):
-            # Skip auth
-            ...
-    """
-
     def __init__(self, whitelist: List[Tuple[str, List[str]]]) -> None:
         self._whitelist: Dict[str, Set[str]] = {}
         for path, methods in whitelist:
             self._whitelist[path] = {m.upper() for m in methods}
 
     def is_allowed(self, path: str, method: str) -> bool:
-        """Check if path and method are whitelisted."""
         if path in self._whitelist:
             methods = self._whitelist[path]
             return method.upper() in methods or "*" in methods
@@ -140,6 +112,5 @@ class WhitelistChecker:
         return False
 
 
-# Pre-configured instances
 auth_required = AuthRequired()
 admin_required = AuthRequired(roles=["admin"])

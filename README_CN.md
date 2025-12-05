@@ -18,12 +18,7 @@ FastAPI 项目脚手架工具 - 快速创建规范的 FastAPI 项目结构
 ## 安装
 
 ```bash
-# 从源码安装
-cd FastScaff
-pip install -e .
-
-# 或直接安装依赖
-pip install -r requirements.txt
+pip install fastscaff
 ```
 
 ## 快速开始

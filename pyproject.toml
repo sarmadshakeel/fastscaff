@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fastscaff"
-version = "0.1.0"
+version = "0.1.1"
 description = "FastAPI project scaffolding tool"
 readme = "README.md"
 license = {text = "MIT"}
@@ -44,7 +44,7 @@ where = ["."]
 include = ["fastscaff*"]
 
 [tool.setuptools.package-data]
-fastscaff = ["templates/**/*.jinja2"]
+fastscaff = ["templates/**/*"]
 
 [tool.ruff]
 line-length = 120

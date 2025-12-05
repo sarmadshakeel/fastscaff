@@ -18,12 +18,7 @@ FastAPI project scaffolding tool - quickly create standardized FastAPI project s
 ## Installation
 
 ```bash
-# Install from source
-cd FastScaff
-pip install -e .
-
-# Or install dependencies directly
-pip install -r requirements.txt
+pip install fastscaff
 ```
 
 ## Quick Start
